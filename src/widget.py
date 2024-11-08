@@ -1,6 +1,9 @@
-from datetime import datetime # Импорт для преобразования функции get_date
-from masks import get_mask_account, get_mask_card_number # Импорт для входных данных аргумента (преобразование в маску) из функции из masks.py
-import re # Регулярные выражения
+import re  # Регулярные выражения
+from datetime import datetime  # Импорт для преобразования функции get_date
+
+from masks import (  # Импорт для входных данных аргумента (преобразование в маску) из функции из masks.py
+    get_mask_account, get_mask_card_number)
+
 
 def mask_account_card(account: str) -> str:
     """Функция маскирует номер карты или счета в зависимости от типа"""
@@ -9,8 +12,9 @@ def mask_account_card(account: str) -> str:
         return f"Счет {get_mask_account(account)}"
     else:
         # Маскировка для карт, сохраняем первые 4, последние 4, остальные заменяем на *
-        numbers = get_mask_card_number(''.join(re.findall(r'\d', account)))
-        return ''.join(item for item in account if item.isalpha()) + " " + numbers
+        numbers = get_mask_card_number("".join(re.findall(r"\d", account)))
+        return "".join(item for item in account if item.isalpha()) + " " + numbers
+
 
 def get_date(date_str: str) -> str:
     """
@@ -22,6 +26,7 @@ def get_date(date_str: str) -> str:
     """
     date = datetime.fromisoformat(date_str)
     return date.strftime("%d.%m.%Y")
+
 
 # Используем функции
 if __name__ == "__main__":
