@@ -2,7 +2,9 @@ import re  # Регулярные выражения
 from datetime import datetime  # Импорт для преобразования функции get_date
 
 from masks import (  # Импорт для входных данных аргумента (преобразование в маску) из функции из masks.py
-    get_mask_account, get_mask_card_number)
+    get_mask_account,
+    get_mask_card_number,
+)
 
 
 def mask_account_card(account: str) -> str:
