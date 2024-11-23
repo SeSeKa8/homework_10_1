@@ -24,7 +24,7 @@ def sort_by_date(data: List[Dict[str, Any]], reverse: bool = True) -> List[Dict[
     # Returns:
     #     List[Dict[str, Any]]: Отсортированный список операций.
 
-    return sorted(data, key=lambda x: x.get("date"), reverse=reverse)
+    return sorted(data, key=lambda x: x.get("date") or "", reverse=reverse)
 
 
 # ПроверкаЖ
