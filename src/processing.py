@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
 
@@ -15,7 +16,7 @@ def filter_by_state(data: List[Dict[str, Any]], state: str = "EXECUTED") -> List
 
 
 def sort_by_date(data: List[Dict[str, Any]], reverse: bool = True) -> List[Dict[str, Any]]:
-    """Сортирует список операций по ключу date."""
+    """Сортирует список операций по ключу date, с обработкой некорректных дат."""
 
     # Args:
     #     data (List[Dict[str, Any]]): Список операций в виде словарей.
@@ -24,30 +25,30 @@ def sort_by_date(data: List[Dict[str, Any]], reverse: bool = True) -> List[Dict[
     # Returns:
     #     List[Dict[str, Any]]: Отсортированный список операций.
 
-    return sorted(data, key=lambda x: x.get("date") or "", reverse=reverse)
+    def parse_date(date_str: str) -> datetime:
+        """Попытка распарсить строку в объект datetime. Возвращает None, если не удалось."""
+        try:
+            # Пробуем распарсить дату, включая возможный формат без секунд
+            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+        except ValueError:
+            try:
+                # Если не получилось с миллисекундами, пробуем без них
+                return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                # Если не удается распарсить, возвращаем None
+                return None
 
 
-# ПроверкаЖ
-if __name__ == "__main__":
-    print(
-        filter_by_state(
-            [
-                {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
-                {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
-                {"id": 594226727, "state": "CANCELED", "date": "2018-09-12T21:27:25.241689"},
-                {"id": 615064591, "state": "CANCELED", "date": "2018-10-14T08:21:33.419441"},
-            ],
-            state="EXECUTED",
-        )
-    )
-    print(
-        sort_by_date(
-            [
-                {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
-                {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
-                {"id": 594226727, "state": "CANCELED", "date": "2018-09-12T21:27:25.241689"},
-                {"id": 615064591, "state": "CANCELED", "date": "2018-10-14T08:21:33.419441"},
-            ],
-            reverse=False,
-        )
-    )
+    def get_date(item: Dict[str, Any]) -> datetime:
+        """Получает дату для сортировки, заменяет некорректную дату на None."""
+        date_str = item.get("date")
+        if date_str:
+            return parse_date(date_str)
+        return None
+
+    # Сортировка с учетом корректности даты
+    return sorted(data, key=lambda x: (
+        get_date(x) is not None,  # Помещаем записи с некорректной датой в конец
+        get_date(x) or datetime.min,  # Для корректных дат — сами даты
+        x.get("id", 0)  # Для одинаковых дат сортируем по id
+    ), reverse=reverse)

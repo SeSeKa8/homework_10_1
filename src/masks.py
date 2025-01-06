@@ -11,11 +11,18 @@ XXXX XX** **** XXXX, где X — это цифра номера.
 Пример вывода:
 7000 79** **** 6361
 """
+import re
 
 
 def get_mask_card_number(card_number: str) -> str:
     """Функция маскировки номера банковской карты"""
 
+    if card_number == "":
+        raise AssertionError("Наберите номер банковской карты")
+    if len(card_number) != 16:
+        raise ValueError("Указан неверный формат номера банковской карты")
+    if not card_number.isdigit():
+        raise ValueError("Указан неверный формат номера банковской карты")
     return f"{card_number[:4]} {card_number[4:6]}** **** {card_number[-4:]}"
 
 
@@ -36,10 +43,12 @@ def get_mask_card_number(card_number: str) -> str:
 
 
 def get_mask_account(account_number: str) -> str:
-    """Функция маскировки номера банковской карты"""
+    """Функция маскировки номера счета банковской карты"""
 
+    if len(''.join(c if c.isdigit() else '' for c in account_number)) != 20:
+        raise ValueError("Указан неверный формат номера счета банковской карты")
     return "**" + account_number[-4:]
 
 
 # if __name__ == "__main__":
-# print(get_mask_account(str(73654108430135874305)))
+#     print(get_mask_account(str(73654108430135874305)))
